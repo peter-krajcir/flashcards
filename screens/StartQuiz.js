@@ -10,8 +10,7 @@ export default class StartQuiz extends Component {
     deck: null,
     correct: 0,
     incorrect: 0,
-    currentQuestionIndex: 0,
-    isVisibleAnswer: false
+    currentQuestionIndex: 0
   };
 
   onDidFocus = () => {
@@ -23,7 +22,6 @@ export default class StartQuiz extends Component {
 
   handleCorrectAnswer = () => {
     this.setState(prevState => ({
-      isVisibleAnswer: false,
       currentQuestionIndex: prevState.currentQuestionIndex + 1,
       correct: prevState.correct + 1
     }));
@@ -31,12 +29,23 @@ export default class StartQuiz extends Component {
 
   handleIncorrectAnswer = () => {
     this.setState(prevState => ({
-      isVisibleAnswer: false,
       currentQuestionIndex: prevState.currentQuestionIndex + 1,
       incorrect: prevState.incorrect + 1
     }));
   };
-  // {this.state.currentQuestionIndex+1 === this.state.deck.questions.length}
+
+  handleRestartQuiz = () => {
+    this.setState(prevState => ({
+      correct: 0,
+      incorrect: 0,
+      currentQuestionIndex: 0
+    }));
+  };
+
+  handleBack = () => {
+    this.props.navigation.goBack();
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -54,6 +63,8 @@ export default class StartQuiz extends Component {
                 title={this.props.navigation.getParam("title")}
                 correct={this.state.correct}
                 incorrect={this.state.incorrect}
+                handleRestartQuiz={this.handleRestartQuiz}
+                handleBack={this.handleBack}
               />
             ) : (
               <Question

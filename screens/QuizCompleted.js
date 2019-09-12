@@ -1,23 +1,78 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { red, green } from "../utils/colors";
+import React, { Component } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Platform
+} from "react-native";
+import { blue, lightPurp, green, red, purple, white } from "../utils/colors";
+import { clearLocalNotification, setLocalNotification } from "../utils/helpers";
 
-export default QuizCompleted = ({ title, correct, incorrect }) => {
-  const calculatePerc = (total, value) => {
+export default class QuizCompleted extends Component {
+  componentDidMount() {
+    clearLocalNotification().then(setLocalNotification);
+  }
+
+  calculatePerc = (total, value) => {
     return ((value / total) * 100).toFixed(2);
   };
-  return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Quiz Completed!</Text>
-      <Text style={styles.normal}>Statistics for deck: {title}</Text>
-      <Text style={styles.correct}>Correct Answers: {correct}</Text>
-      <Text style={styles.incorrect}>Incorrect Answers: {incorrect}</Text>
-      <Text style={styles.normal}>
-        Success rate: {calculatePerc(correct + incorrect, correct)}%
-      </Text>
-    </View>
-  );
-};
+
+  handleRestart = () => {
+    this.props.handleRestartQuiz();
+  };
+
+  handleBack = () => {
+    this.props.handleBack();
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.heading}>Quiz Completed!</Text>
+        <Text style={styles.normal}>
+          Statistics for deck: {this.props.title}
+        </Text>
+        <Text style={styles.correct}>
+          Correct Answers: {this.props.correct}
+        </Text>
+        <Text style={styles.incorrect}>
+          Incorrect Answers: {this.props.incorrect}
+        </Text>
+        <Text style={styles.normal}>
+          Success rate:{" "}
+          {this.calculatePerc(
+            this.props.correct + this.props.incorrect,
+            this.props.correct
+          )}
+          %
+        </Text>
+        <TouchableOpacity
+          style={[
+            Platform.OS === "ios"
+              ? styles.iosSubmitBtn
+              : styles.AndroidSubmitBtn,
+            { backgroundColor: lightPurp }
+          ]}
+          onPress={this.handleRestart}
+        >
+          <Text style={styles.submitBtnText}>Restart Quiz</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            Platform.OS === "ios"
+              ? styles.iosSubmitBtn
+              : styles.AndroidSubmitBtn,
+            { backgroundColor: blue }
+          ]}
+          onPress={this.handleBack}
+        >
+          <Text style={styles.submitBtnText}>Back To Deck</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -42,5 +97,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: red
+  },
+  iosSubmitBtn: {
+    backgroundColor: purple,
+    padding: 10,
+    borderRadius: 7,
+    height: 45,
+    marginLeft: 40,
+    marginRight: 40,
+    marginTop: 20
+  },
+  AndroidSubmitBtn: {
+    backgroundColor: purple,
+    padding: 10,
+    paddingLeft: 30,
+    paddingRight: 30,
+    height: 45,
+    borderRadius: 2,
+    marginTop: 20
+  },
+  submitBtnText: {
+    color: white,
+    fontSize: 22,
+    textAlign: "center"
   }
 });
